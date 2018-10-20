@@ -10,6 +10,9 @@
 
 clear all
 directory='/home/melisa/Escritorio/Melisa/Doctorado/Information/';
+cd(directory)
+load('EC1_matrix','-mat')
+cd('/home/melisa/Escritorio/Melisa/Mediciones/')
 %Rat for the experiment
 rat=3;
 %setting parameters for filters
@@ -36,8 +39,9 @@ freq=1;
 %creating the list of different LFP of the recordings. It is not the same
 %as the number of recodings and cells.
 lfp=Days(list);
-
+matrix=save_matrix;
 for index= 1:length(lfp) %goes for every recorded session
+    index
         count=0; 
         order = Wished_Register_Order(area,lfp(index,:)); %choose the corresponding day of register
         register=Rat_Register(files,area,rat,order); %load the day register
@@ -62,7 +66,7 @@ for index= 1:length(lfp) %goes for every recorded session
                         for i=1:ncells
                                for j=i+1:ncells
                                    if size(matrix(:,:,i))==size(matrix(:,:,j))
-                                      [pn1n2 pn1n2t pt corr_matrix]=BidimentionalGaussianProbability(matrix(:,:,i),matrix(:,:,j));
+                                      [pn1n2 pn1n2t pt corr_matrix]=BidimentionalGaussianProbability_v2018(matrix(:,:,i),matrix(:,:,j));
                                       [pn1 pnt1 pt1]=GaussianProbability_v2018(matrix(:,:,i));
                                       [pn2 pnt2 pt2]=GaussianProbability_v2018(matrix(:,:,j));                                        
                                       for aspect=1:6
@@ -77,19 +81,19 @@ for index= 1:length(lfp) %goes for every recorded session
                                            
                                            data{index}{i}.Pair.I_1(j-1,aspect)=I1;
                                            data{index}{i}.Pair.h_1(j-1,aspect)=h1;
-                                           data{index}{i}.Pair.ht_1(j-1,aspect)=ht1;
+                                           data{index}{i}.Pair.ht_1(j-1,aspect)=h1t;
                                            data{index}{i}.Pair.h_var_1(j-1,aspect)=hj1;
                                            data{index}{i}.Pair.I_norm_1(j-1,aspect)=I1/min(h1,hj1);
                                            
                                            data{index}{i}.Pair.I_2(j-1,aspect)=I2;
                                            data{index}{i}.Pair.h_2(j-1,aspect)=h2;
-                                           data{index}{i}.Pair.ht_2(j-1,aspect)=ht2;
+                                           data{index}{i}.Pair.ht_2(j-1,aspect)=h2t;
                                            data{index}{i}.Pair.h_var_2(j-1,aspect)=hj2;
                                            data{index}{i}.Pair.I_norm_2(j-1,aspect)=I2/min(h2,hj2);
                                       end
                                       for test=1:100
                                         [new_matrix1 new_matrix2]=RandomPairSpikesTimes_v2018(matrix(:,:,i),matrix(:,:,j));
-                                        [pn1n2 pn1n2t pt corr_matrix]=BidimentionalGaussianProbability(new_matrix1,mew_matrix2);
+                                        [pn1n2 pn1n2t pt corr_matrix]=BidimentionalGaussianProbability_v2018(new_matrix1,new_matrix2);
                                         [pn1 pnt1 pt1]=GaussianProbability_v2018(new_matrix1);
                                         [pn2 pnt2 pt2]=GaussianProbability_v2018(new_matrix2);      
                                         for aspect=1:6
@@ -98,22 +102,22 @@ for index= 1:length(lfp) %goes for every recorded session
                                             [I2 h2 h2t hj2]=BehaviouralInformationSquareProtocol(pn2,pnt2,pt2,1,pos,freq,aspect-1);
                                               
                                             data{index}{i}.TEST.Pair.I_pair(j-1,aspect,test)=I0;
-                                            data{index}{i}.TEST.Pair.h_pair(j-1,aspect)=h0;
-                                            data{index}{i}.TEST.Pair.ht_pair(j-1,aspect)=h0t;
-                                            data{index}{i}.TEST.Pair.h_var_pair(j-1,aspect)=hj;
-                                            data{index}{i}.TEST.Pair.I_norm(j-1,aspect)=I0/min(h0,hj);
+                                            data{index}{i}.TEST.Pair.h_pair(j-1,aspect,test)=h0;
+                                            data{index}{i}.TEST.Pair.ht_pair(j-1,aspect,test)=h0t;
+                                            data{index}{i}.TEST.Pair.h_var_pair(j-1,aspect,test)=hj;
+                                            data{index}{i}.TEST.Pair.I_norm(j-1,aspect,test)=I0/min(h0,hj);
                                            
-                                            data{index}{i}.TEST.Pair.I_1(j-1,aspect)=I1;
-                                            data{index}{i}.TEST.Pair.h_1(j-1,aspect)=h1;
-                                            data{index}{i}.TEST.Pair.ht_1(j-1,aspect)=ht1;
-                                            data{index}{i}.TEST.Pair.h_var_1(j-1,aspect)=hj1;
-                                            data{index}{i}.TEST.Pair.I_norm_1(j-1,aspect)=I1/min(h1,hj1);
+                                            data{index}{i}.TEST.Pair.I_1(j-1,aspect,test)=I1;
+                                            data{index}{i}.TEST.Pair.h_1(j-1,aspect,test)=h1;
+                                            data{index}{i}.TEST.Pair.ht_1(j-1,aspect,test)=h1t;
+                                            data{index}{i}.TEST.Pair.h_var_1(j-1,aspect,test)=hj1;
+                                            data{index}{i}.TEST.Pair.I_norm_1(j-1,aspect,test)=I1/min(h1,hj1);
                                            
-                                            data{index}{i}.TEST.Pair.I_2(j-1,aspect)=I2;
-                                            data{index}{i}.TEST.Pair.h_2(j-1,aspect)=h2;
-                                            data{index}{i}.TEST.Pair.ht_2(j-1,aspect)=ht2;
-                                            data{index}{i}.TEST.Pair.h_var_2(j-1,aspect)=hj2;
-                                            data{index}{i}.TEST.Pair.I_norm_2(j-1,aspect)=I2/min(h2,hj2);  
+                                            data{index}{i}.TEST.Pair.I_2(j-1,aspect,test)=I2;
+                                            data{index}{i}.TEST.Pair.h_2(j-1,aspect,test)=h2;
+                                            data{index}{i}.TEST.Pair.ht_2(j-1,aspect,test)=h2t;
+                                            data{index}{i}.TEST.Pair.h_var_2(j-1,aspect,test)=hj2;
+                                            data{index}{i}.TEST.Pair.I_norm_2(j-1,aspect,test)=I2/min(h2,hj2);  
                                         end
                                       end
                                    end
@@ -124,3 +128,6 @@ for index= 1:length(lfp) %goes for every recorded session
             end
         end
 end
+
+name=strcat(directory,areaname,'_Pair');
+save(name,'data','-mat')

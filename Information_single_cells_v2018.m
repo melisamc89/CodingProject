@@ -14,7 +14,7 @@ directory='/home/melisa/Escritorio/Melisa/Doctorado/Information/';
 rat=3;
 %setting parameters for filters
 low1=1.5;
-low2=4;
+low2=6;
 high1=5;
 high2=12;
 n_fs=4800;
@@ -23,10 +23,13 @@ n_fs=4800;
 load('3CA1','-mat');
 areaname='CA1';
 area=CA1_3;
+
 %for EC1
 load('3EC1','-mat');
 areaname='EC1';
 area=EC1_3;
+
+
 list=area;
 %Loading the avaible files
 files=Data_Listing();
@@ -38,6 +41,7 @@ freq=1;
 lfp=Days(list);
 
 for index= 1:length(lfp) %goes for every recorded session
+    index
         count=0; 
         order = Wished_Register_Order(area,lfp(index,:)); %choose the corresponding day of register
         register=Rat_Register(files,area,rat,order); %load the day register
@@ -74,7 +78,7 @@ for index= 1:length(lfp) %goes for every recorded session
                             [pmatrix1_t pmatrix2_t]=SpikesPhaseMatrix_v2018(phase2,cell_spikes_times,pos,freq,42);
                             
                             %compute mean firing rate parameters
-                            data{index}{count}.estimators.mean_firing_rate=sum(sum([matrix1 matrix2]'))/(size(matrix1,1)*42);
+                            data{index}{count}.estimators.mean_firing_rate=sum(sum([matrix1 matrix2]'))/(2*size(matrix1,1)*42);
                             data{index}{count}.estimators.time_firing_rate=mean([matrix1,matrix2]);
                             data{index}{count}.estimators.time_firing_rate_variance=var([matrix1,matrix2]);
                             
@@ -93,6 +97,7 @@ for index= 1:length(lfp) %goes for every recorded session
                             %theta
                             [circular_mean_t,circular_variance_t]=CircularAnalysis_v2018([pmatrix1_t,pmatrix2_t]);
                             pmatrix_t=[pmatrix1_t pmatrix2_t];
+                            pmatrix_d=[pmatrix1_d pmatrix2_d];                            
                             aux=reshape(pmatrix_t,[size(pmatrix_t,1)*size(pmatrix_t,2)*size(pmatrix_t,3) 1]);
                             aux2=aux(find(aux));   
                             data{index}{count}.estimators.mean_phase_theta=circ_mean(aux2);
@@ -116,7 +121,7 @@ for index= 1:length(lfp) %goes for every recorded session
                                    data{index}{count}.I_norm(aspect)=I/min(h,hvar); 
                                    
                                    %delta phase
-                                   [I h ht hvar]=BehaviouralInformationSquareProtocol(p_delta,p_deltat,pt2,1,pos,freq,aspect-1);        
+                                   [I h ht hvar]=BehaviouralInformationSquareProtocol(p_delta,p_deltat,pt2,1,pos,freq,aspect-1);
                                    data{index}{count}.I_delta(aspect)=I;
                                    data{index}{count}.h_delta(aspect)=h;
                                    data{index}{count}.ht_delta(aspect)=ht;
@@ -140,37 +145,38 @@ for index= 1:length(lfp) %goes for every recorded session
                                 
                                 new_pmatrix_t=RandomSpikesPhase_v2018(pmatrix_t);
                                 [p_theta p_thetat pt2]=VonMisesProbability_v2018(matrix,new_pmatrix_t,20);
-                                for aspects=1:6
+                                for aspect=1:6
                                        [I h ht hvar]=BehaviouralInformationSquareProtocol(pn,pnt,pt,1,pos,freq,aspect-1);
-                                       data{index}{count}.I_test(aspect,test)=I;
-                                       data{index}{count}.h_test(aspect,test)=h;
-                                       data{index}{count}.ht_test(aspect,test)=ht;
-                                       data{index}{count}.h_var_test(aspect,test)=hvar;
-                                       data{index}{count}.I_norm_test(aspect,test)=I/min(h,hvar); 
+                                       data{index}{count}.TEST.I(aspect,test)=I;
+                                       data{index}{count}.TEST.h(aspect,test)=h;
+                                       data{index}{count}.TEST.ht(aspect,test)=ht;
+                                       data{index}{count}.TEST.h_var(aspect,test)=hvar;
+                                       data{index}{count}.TEST.I_norm(aspect,test)=I/min(h,hvar); 
                                        
                                        
                                        [I h ht hvar]=BehaviouralInformationSquareProtocol(p_delta,p_deltat,pt2,1,pos,freq,aspect-1);        
-                                       data{index}{count}.I_test(aspect,test)=I;
-                                       data{index}{count}.h_test(aspect,test)=h;
-                                       data{index}{count}.ht_test(aspect,test)=ht;
-                                       data{index}{count}.h_var_test(aspect,test)=hvar;
-                                       data{index}{count}.I_norm_test(aspect,test)=I/min(h,hvar); 
+                                       data{index}{count}.TEST.I_delta(aspect,test)=I;
+                                       data{index}{count}.TEST.h_delta(aspect,test)=h;
+                                       data{index}{count}.TEST.ht_delta(aspect,test)=ht;
+                                       data{index}{count}.TEST.h_var_delta(aspect,test)=hvar;
+                                       data{index}{count}.TEST.I_norm_delta(aspect,test)=I/min(h,hvar); 
                                        
                                        [I h ht hvar]=BehaviouralInformationSquareProtocol(p_theta,p_thetat,pt2,1,pos,freq,aspect-1);        
-                                       data{index}{count}.I_test(aspect,test)=I;
-                                       data{index}{count}.h_test(aspect,test)=h;
-                                       data{index}{count}.ht_test(aspect,test)=ht;
-                                       data{index}{count}.h_var_test(aspect,test)=hvar;
-                                       data{index}{count}.I_norm_test(aspect,test)=I/min(h,hvar);    
+                                       data{index}{count}.TEST.I_theta(aspect,test)=I;
+                                       data{index}{count}.TEST.h_theta(aspect,test)=h;
+                                       data{index}{count}.TEST.ht_theta(aspect,test)=ht;
+                                       data{index}{count}.TEST.h_var_theta(aspect,test)=hvar;
+                                       data{index}{count}.TEST.I_norm_theta(aspect,test)=I/min(h,hvar);    
                                    end
                             end
-                            save_matrix(:,:,count)=matrix;
+                            save_matrix(1:size(matrix,1),:,i)=matrix;
                         end
                     end
                 end
             end
         end
-end
-                        
-name=strcat(directory,areaname,'_complete');
-save(name,'recording_data','-mat')
+end                        
+name=strcat(directory,areaname);
+save(name,'data','-mat')
+name2=strcat(directory,areaname,'_matrix');
+save(name2,'save_matrix','-mat')

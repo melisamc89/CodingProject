@@ -4,3 +4,4 @@ Most of the functions included here are reffered to the proccess of computing in
 informative sets of data and plotting them.
 There is a group of functions for loading data and pre-processing it that would be included in another repository.
 
+All of this code has been used to the publication of: Information-Theoretical Analysis of the Neural Code in the Rodent Temporal Lobe. Entropy 2018
